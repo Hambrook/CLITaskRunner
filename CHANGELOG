@@ -1,0 +1,2 @@
+2015-10-08 feat(streams): update to support any readable stream, not just "Out" and "Err"
+2015-10-07 initial build
