@@ -3,7 +3,7 @@
 namespace Hambrook;
 
 /**
- * BACKGROUND
+ * CLITaskRunner
  *
  * Run a CLI command in the background and get updates via callbacks on events
  * including buffer and line updates.
@@ -29,12 +29,13 @@ namespace Hambrook;
  */
 class CLITaskRunner {
 
-	private $command     = "";
-	private $lines       = "";
+	private $command         = "";
+	private $lines           = "";
 
-	private $bufferSize  = 10;
+	private $bufferSize      = 10;
+	private $compatMode      = false;
 
-	private $streamsConfig = [
+	private $streamsConfig   = [
 		"stdIn"  => ["pipe","r"],
 		"stdOut" => ["pipe","w"],
 		"stdErr" => ["pipe","w"]
@@ -46,7 +47,7 @@ class CLITaskRunner {
 		"onFailure"  => []
 	];
 
-	private $streamsData = [];
+	private $streamsData     = [];
 
 	/**
 	 * _CONSTRUCT
@@ -65,7 +66,7 @@ class CLITaskRunner {
 	 *
 	 * @param   array  $streamsConfig  The streams config to import
 	 *
-	 * @return  bool|array           Success bool if setting, array if getting
+	 * @return  bool|array             Success bool if setting, array if getting
 	 */
 	public function streams($streamsConfig=[]) {
 		if (!func_num_args()) {
@@ -108,23 +109,43 @@ class CLITaskRunner {
 	}
 
 	/**
+	 * COMPATMODE
+	 *
+	 * Get or set compatibility mode. Uses regex for line breaks instead of PHP_EOL
+	 * to cover cases where commands may produce unsuspected output.
+	 *
+	 * @param   array  $compatMode  The streams config to import
+	 *
+	 * @return  bool                Success if setting, current value of getting
+	 */
+	public function compatMode($compatMode=false) {
+		if (!func_num_args()) {
+			return $this->compatMode;
+		}
+
+		$this->compatMode = (!!$compatMode);
+
+		return true;
+	}
+
+	/**
 	 * ON
 	 *
 	 * Set callback functions for when a new line is outputted to a stream
 	 *
-	 * @param   string    $stream      The stream to place the callback on
+	 * @param   string    $stream    The stream to place the callback on
 	 * @param   callable  $callback  The callback to call
-	 * @param   string    $ifMatch   Optional regex pattern to match before calling
+	 * @param   string    $pattern   Optional regex pattern to match before calling
 	 *
 	 * @return  bool                 Valid callback or not
 	 */
-	public function onLine($stream, $callback, $ifMatch=false) {
+	public function onLine($stream, $callback, $pattern=false) {
 		if (!$this->_streamIsWritable($stream)) { return false; }
 		if (!is_callable($callback)) { return false; }
 
 		$this->streamsData[$stream]["callbacks"]["line"][] = [
 			"callback" => $callback,
-			"pattern"  => $ifMatch
+			"pattern"  => $pattern
 		];
 		return true;
 	}
@@ -135,17 +156,17 @@ class CLITaskRunner {
 	 * Set callback functions for when a new line is outputted to stdOut
 	 *
 	 * @param   callable  $callback  The callback to call
-	 * @param   string    $ifMatch   Optional regex pattern to match before calling
+	 * @param   string    $pattern   Optional regex pattern to match before calling
 	 *
 	 * @return  bool                 Valid callback or not
 	 */
-	public function onBuffer($stream, $callback, $ifMatch=false) {
+	public function onBuffer($stream, $callback, $pattern=false) {
 		if (!$this->_streamIsWritable($stream)) { return false; }
 		if (!is_callable($callback)) { return false; }
 
 		$this->streamsData[$stream]["callbacks"]["buffer"][] = [
 			"callback" => $callback,
-			"pattern"  => $ifMatch
+			"pattern"  => $pattern
 		];
 		return true;
 	}
@@ -246,8 +267,8 @@ class CLITaskRunner {
 				if (!$v["watchLine"]) { continue; }
 
 				$this->streamsData[$k]["output"] .= $buffer;
-				if (preg_match("/[\r\n]/", $this->streamsData[$k]["output"])) {
-					$segments = preg_split("/[\r\n]+/", $this->streamsData[$k]["output"]);
+				if ($this->strHasNL($this->streamsData[$k]["output"])) {
+					$segments = $this->strSplitByNL($this->streamsData[$k]["output"]);
 					while (count($segments) > 1) {
 						$line = array_shift($segments);
 						$this->_runCallbacks($v["callbacks"]["line"], $line);
@@ -348,7 +369,7 @@ class CLITaskRunner {
 	 *
 	 * @param   string  $stream  Name of the stream
 	 *
-	 * @return  bool           Writable or not
+	 * @return  bool             Writable or not
 	 */
 	private function _streamIsWritable($stream) {
 		return (array_key_exists($stream, $this->streamsConfig) && $this->streamsConfig[$stream][1] == "w");
@@ -361,7 +382,7 @@ class CLITaskRunner {
 	 *
 	 * @param   string  $stream  Name of the stream
 	 *
-	 * @return  array          Array of streamsData
+	 * @return  array            Array of streamsData
 	 */
 	private function _buildStreamsContainer() {
 		$index = 0;
@@ -381,6 +402,44 @@ class CLITaskRunner {
 			];
 		}
 		return $this->streamsData;
+	}
+
+	/**
+	 * _STRHASNL
+	 *
+	 * Detect if a string has new lines in it. If compat mode is set then the slightly
+	 * slower but more compatible method is chosen.
+	 *
+	 * @param   string  $string  The string to search in
+	 *
+	 * @return  array            Array of streamsData
+	 */
+	private function strHasNL($string) {
+		if (!$this->compatMode) {
+			return (strpos($string, PHP_EOL) !== false);
+		}
+		return (
+			(strpos($string, "\n") !== false) ||
+			(strpos($string, "\r") !== false)
+		);
+	}
+
+	/**
+	 * _STRSPLITBYNL
+	 *
+	 * Split a string by new lines. If compat mode is set then the slightly slower but
+	 * more compatible method is chosen.
+	 *
+	 * @param   string  $string  The string to split
+	 *
+	 * @return  array            Array of streamsData
+	 */
+	private function strSplitByNL($string) {
+		if (!$this->compatMode) {
+			return explode(PHP_EOL, $string);
+		}
+		// use OR in the regex instead of [\r\n]+ so that empty lines aren't stripped
+		return preg_split("/\r\n|\r|\n/", $string);
 	}
 
 }
