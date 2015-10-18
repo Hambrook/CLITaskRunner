@@ -1,3 +1,4 @@
+2015-10-17 fix(callbacks): fix class not firing multiple matching callbacks
 2015-10-09 feat(core): update to use native system EOL character, but with support for "compatMode" that will work with EOL characters not native to the current platform
 2015-10-09 feat(docs): build out the README a bit
 2015-10-08 feat(streams): update to support any readable stream, not just "stdOut" and "stdErr"

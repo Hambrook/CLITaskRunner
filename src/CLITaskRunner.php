@@ -1,6 +1,6 @@
 <?php
 
-namespace Hambrook;
+namespace Hambrook\CLITaskRunner;
 
 /**
  * CLITaskRunner
@@ -8,7 +8,7 @@ namespace Hambrook;
  * Run a CLI command in the background and get updates via callbacks on events
  * including buffer and line updates.
  *
- * @version    0.1.0
+ * @version    0.1.1
  *
  * @author     Rick Hambrook <rick@rickhambrook.com>
  * @copyright  2015 Rick Hambrook
@@ -140,13 +140,16 @@ class CLITaskRunner {
 	 * @return  bool                 Valid callback or not
 	 */
 	public function onLine($stream, $callback, $pattern=false) {
+		// Validate the stream, callback and pattern
 		if (!$this->_streamIsWritable($stream)) { return false; }
 		if (!is_callable($callback)) { return false; }
+		if ($pattern && (@preg_match($pattern, null)) === false) { return false; }
 
 		$this->streamsData[$stream]["callbacks"]["line"][] = [
 			"callback" => $callback,
 			"pattern"  => $pattern
 		];
+
 		return true;
 	}
 
@@ -163,6 +166,7 @@ class CLITaskRunner {
 	public function onBuffer($stream, $callback, $pattern=false) {
 		if (!$this->_streamIsWritable($stream)) { return false; }
 		if (!is_callable($callback)) { return false; }
+		if ($pattern && (@preg_match($pattern, null)) === false) { return false; }
 
 		$this->streamsData[$stream]["callbacks"]["buffer"][] = [
 			"callback" => $callback,
@@ -316,6 +320,7 @@ class CLITaskRunner {
 	 */
 	private function _runCallbacks($callbacks, $data=false) {
 		if (!is_array($callbacks) || !count($callbacks)) { return false; }
+		$results = [];
 		foreach ($callbacks as $call) {
 			$args = func_get_args();
 			array_shift($args);
@@ -328,9 +333,9 @@ class CLITaskRunner {
 				}
 			}
 
-			return call_user_func_array($call["callback"], $args);
+			$results[] = call_user_func_array($call["callback"], $args);
 		}
-		return;
+		return $results;
 	}
 
 	/**

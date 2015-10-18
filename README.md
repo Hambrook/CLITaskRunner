@@ -7,7 +7,7 @@ Run a CLI command in the background and get updates via callbacks on events incl
 ##Example
 ```php
 $cmd = "mysqldump -uroot -proot -v dbname | mysql -uroot -proot dbname2";
-$CLITR = new \Hambrook\CLITaskRunner($cmd);
+$CLITR = new \Hambrook\CLITaskRunner\CLITaskRunner($cmd);
 $CLITR->onLine(
 	"stdErr",
 	function($v) {
