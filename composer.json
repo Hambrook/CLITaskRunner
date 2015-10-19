@@ -1,0 +1,20 @@
+{
+	"name": "hambrook/clitaskrunner",
+	"description": "Run a CLI command in the background and get updates via callbacks on events including buffer and line updates. You can subscribe to any writable stream and get callbacks triggered for new lines or on each buffer update.",
+	"license": "GPL-3.0",
+	"keywords": ["callback", "cli", "php"],
+	"authors": [
+		{
+			"name": "Rick Hambrook",
+			"email": "rick@rickhambrook.com",
+			"homepage": "http://www.rickhambrook.com"
+		}
+	],
+	"require": {},
+	"require-dev": {},
+	"autoload": {
+		"psr-4": {
+			"Hambrook\\CLITaskRunner\\": "src"
+		}
+	}
+}
