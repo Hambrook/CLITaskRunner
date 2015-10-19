@@ -440,6 +440,7 @@ class CLITaskRunner {
 	 * @return  array            Array of streamsData
 	 */
 	private function strSplitByNL($string) {
+		if (!is_string($string)) { return []; }
 		if (!$this->compatMode) {
 			return explode(PHP_EOL, $string);
 		}
