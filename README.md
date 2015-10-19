@@ -28,11 +28,14 @@ $CLITR->process();
 ##Who is it for?
 Probably mostly CLI application developers, but there will be usecases I haven't thought of.
 
-####Why use this...
+####Why use this?
 I built this because I use `mysqldump` and `rsync` from within a CLI application and wanted to customise the output from those commands. It couldn't be done with a simple `popen` because `mysqldump` puts its verbose output into the `stdErr` stream instead of `stdOut`. Then, naturally, I made it as versatile as possible.
 
 ####When you could use this?
 When you need to run a CLI command and be notified when specific output occurs on a particular stream.
+
+####What is this not?
+This library sits between your software and CLI commands that it runs. It does not sit between your software and the user. It doesn't do any user input management, argument management, output formatting, or anything of the sort. It helps your software get updates from long-ish running CLI commands.
 
 ##Functions
 ###`__construct()`
