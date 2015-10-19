@@ -1,6 +1,6 @@
 #CLITaskRunner
-######By Rick Hambrook
------
+
+[![Build Status](https://travis-ci.org/Hambrook/CLITaskRunner.svg)](https://travis-ci.org/Hambrook/CLITaskRunner)
 
 Run a CLI command in the background and get updates via callbacks on events including buffer and line updates. You can subscribe to any writable stream and get callbacks triggered for new lines or on each buffer update.
 
@@ -92,10 +92,9 @@ Feel free to fork this project and submit pull requests, or even just request fe
  * Add type hinting for all functions
  * Add documentation
  * Add more examples
- * Add unit tests
- * Add composer support
+ * Add more unit tests
  * Add any other standard documentation that should be included
- * _If you have an idea, [let me know](mailto:rick@rickhambrook.com)._
+ * _If you have an idea, [let me know](https://github.com/Hambrook/CLITaskRunner/issues)._
 
 ##License
 Copyright &copy; 2015 Rick Hambrook
