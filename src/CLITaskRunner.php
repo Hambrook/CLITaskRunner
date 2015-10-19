@@ -101,9 +101,9 @@ class CLITaskRunner {
 		}
 
 		// Each stream must be an array with at least two items (type and mode)
-		if (!is_int($bufferSize)) { return false; }
+		if (!is_int($size)) { return false; }
 
-		$this->bufferSize = $bufferSize;
+		$this->bufferSize = $size;
 
 		return true;
 	}
