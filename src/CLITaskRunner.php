@@ -76,7 +76,7 @@ class CLITaskRunner {
 		// Each stream must be an array with at least two items (type and mode)
 		if (!is_array($streamsConfig)) { return false; }
 		foreach ($streamsConfig as $k => $v) {
-			if (!is_array($v) || count($v) < 2) { return false; }
+			if (!is_array($v) || count($v) !== 2) { return false; }
 			$streamsConfig[$k] = array_values($v);
 		}
 
