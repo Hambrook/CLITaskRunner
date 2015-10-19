@@ -114,9 +114,9 @@ class CLITaskRunner {
 	 * Get or set compatibility mode. Uses regex for line breaks instead of PHP_EOL
 	 * to cover cases where commands may produce unsuspected output.
 	 *
-	 * @param   array  $compatMode  The streams config to import
+	 * @param   bool  $compatMode  The streams config to import
 	 *
-	 * @return  bool                Success if setting, current value of getting
+	 * @return  bool               Success if setting, current value of getting
 	 */
 	public function compatMode($compatMode=false) {
 		if (!func_num_args()) {
