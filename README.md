@@ -1,10 +1,10 @@
-#CLITaskRunner
+# CLITaskRunner
 
 [![Build Status](https://travis-ci.org/Hambrook/CLITaskRunner.svg)](https://travis-ci.org/Hambrook/CLITaskRunner)
 
 Run a CLI command in the background and get updates via callbacks on events including buffer and line updates. You can subscribe to any writable stream and get callbacks triggered for new lines or on each buffer update.
 
-##Example
+## Example
 ```php
 $cmd = "mysqldump -uroot -proot -v dbname | mysql -uroot -proot dbname2";
 $CLITR = new \Hambrook\CLITaskRunner\CLITaskRunner($cmd);
@@ -25,69 +25,69 @@ $CLITR->onLine(
 $CLITR->process();
 ```
 
-##Who is it for?
+## Who is it for?
 Probably mostly CLI application developers, but there will be usecases I haven't thought of.
 
-####Why use this?
+#### Why use this?
 I built this because I use `mysqldump` and `rsync` from within a CLI application and wanted to customise the output from those commands. It couldn't be done with a simple `popen` because `mysqldump` puts its verbose output into the `stdErr` stream instead of `stdOut`. Then, naturally, I made it as versatile as possible.
 
-####When you could use this?
+#### When you could use this?
 When you need to run a CLI command and be notified when specific output occurs on a particular stream.
 
-####What is this not?
+#### What is this not?
 This library sits between your software and CLI commands that it runs. It does not sit between your software and the user. It doesn't do any user input management, argument management, output formatting, or anything of the sort. It helps your software get updates from long-ish running CLI commands.
 
-##Functions
-###`__construct()`
+## Functions
+### `__construct()`
 `CLITaskRunner `**`__construct`**`(string `**`$command`**`)`
 
 Create a new instance with a command ready to run
 
-###`onLine()`
+### `onLine()`
 `bool `**`onLine`**`(string `**`$stream`**`, callable `**`$callback`**`, `*`[bool|string `**`$pattern`**`=false]`*`)`
 
 Add a callback for when a new line is received, with optional regex pattern.
 
-###`onBuffer()`
+### `onBuffer()`
 `bool `**`onBuffer`**`(string `**`$stream`**`, callable `**`$callback`**`, `*`[bool|string `**`$pattern`**`=false]`*`)`
 
 Add a callback for when the buffer is received, with optional regex pattern.
 
-###`onSuccess()`
+### `onSuccess()`
 `bool `**`onSuccess`**`(callable `**`$callback`**`)`
 
 Add a callback for when the command succeeds.
 
-###`onFailure()`
+### `onFailure()`
 `bool `**`onFailure`**`(callable `**`$callback`**`)`
 
 Add a callback for when the command fails.
 
-###`onComplete()`
+### `onComplete()`
 `bool `**`onComplete`**`(callable `**`$callback`**`)`
 
 Add a callback for when the process is complete. Gets called after onSuccess and onFailure.
 
-###`bufferSize()`
+### `bufferSize()`
 `bool|int `**`bufferSize`**`(`*`[int `**`$bufferSize`**`=10]`*`)`
 
 Gets or sets the buffer size. Buffer size is currently common across all streams.
 
-###`streams()`
+### `streams()`
 `bool `**`streams`**`(`*`[array `**`$streams`**`=[]]`*`)`
 
 Get or set the array of streams. Each stream will use its array key as the stream key when adding callbacks.
 
-##Testing
+## Testing
 _Tests coming soon._
 
-##Feedback
+## Feedback
 Tell me if you loved it. Tell me if you hated it. Tell me if you used it and thought "meh". I'm keen to hear your feedback.
 
-##Contributing
+## Contributing
 Feel free to fork this project and submit pull requests, or even just request features via the issue tracker. Please be descriptive with pull requests and match the existing code style.
 
-##Roadmap
+## Roadmap
  * Add support for pushing to the stdIn stream
  * Add type hinting for all functions
  * Add documentation
@@ -96,7 +96,7 @@ Feel free to fork this project and submit pull requests, or even just request fe
  * Add any other standard documentation that should be included
  * _If you have an idea, [let me know](https://github.com/Hambrook/CLITaskRunner/issues)._
 
-##License
+## License
 Copyright &copy; 2015 Rick Hambrook
 
 This program is free software: you can redistribute it and/or modify
